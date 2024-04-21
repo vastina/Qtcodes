@@ -3,6 +3,7 @@
 ```bash
 sudo apt-get install libgl1-mesa-dev
 sudo apt-get install qtbase5-dev qtchooser  qtbase5-dev-tools qtbase6-dev
+# if you don't care about adding 1GB and more in your disk
 sudo apt-get install qt5* qt6*
 ```
 

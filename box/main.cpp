@@ -6,7 +6,7 @@
 #include "client.hpp"
 #include "loger.hpp"
 
-constexpr unsigned short PORT{1644};
+constexpr unsigned short PORT{1689};
 
 int main(int argc, char *argv[]){
     QApplication app(argc, argv);
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     client_->Connect(AF_INET, PORT);
     client_->Init(); 
 
-    client_->setSizeIncrement(800, 600);
+    client_->setBaseSize(800, 600);
     client_->show();
     return app.exec();
 }
