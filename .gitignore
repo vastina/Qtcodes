@@ -1,0 +1,13 @@
+build
+.cache
+log.txt
+test
+
+# executables
+**/*.out
+
+# code archived by others
+arch
+
+# a symbol link
+designer
