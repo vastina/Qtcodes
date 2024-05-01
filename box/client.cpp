@@ -161,6 +161,8 @@ void client::setClientSock(int domain,int type,int protocol, short port){
     }   
 }
 
+static const char* localaddr = "127.0.0.1";
+
 void client::Connect(int domain , unsigned short port){
     struct sockaddr_in serveaddr;
     memset(&serveaddr, 0, sizeof(serveaddr));

@@ -19,7 +19,6 @@
 
 namespace vastina {
 
-static const char* localaddr = "127.0.0.1";
 
 class client : public QWidget
 {
