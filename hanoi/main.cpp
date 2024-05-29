@@ -8,7 +8,7 @@ int main( int argc, char* argv[] )
   MainWindow w;
   KeyPressFilter filter( w.getStepBtn() );
   a.installEventFilter( &filter );
-  w.init( 9 );
+  w.init( 3 );
   w.show();
   return a.exec();
 }
