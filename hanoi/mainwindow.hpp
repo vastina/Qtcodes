@@ -23,30 +23,6 @@ enum pole
 };
 constexpr u16 total = pole::ONE + pole::TWO + pole::THREE;
 
-class KeyPressFilter : public QObject
-{
-  Q_OBJECT
-
-public:
-  explicit KeyPressFilter( QPushButton* button ) : button( button ) {}
-
-protected:
-  bool eventFilter( QObject* obj, QEvent* event ) override
-  {
-    if ( event->type() == QEvent::KeyPress ) {
-      QKeyEvent* keyEvent = static_cast<QKeyEvent*>( event );
-      if ( keyEvent->key() == Qt::Key_Plus ) {
-        Q_EMIT button->clicked();
-        return true;
-      }
-    }
-    return QObject::eventFilter( obj, event );
-  }
-
-private:
-  QPushButton* button;
-};
-
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
