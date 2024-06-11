@@ -1,6 +1,8 @@
 #include "hanoi.hpp"
-#include <mutex>
+#include <chrono>
 #include <qpushbutton.h>
+#include <qthread.h>
+#include <thread>
 
 namespace vas {
 
@@ -21,6 +23,23 @@ void Hanoier::moveone( u16 level, u16 from, u16 to )
   ctnt->disks[level]->move( ( wWidth / 4 ) * ( to + 1 ) - ctnt->disks[level]->width() / 2,
                             wHeight - ctnt->poles[to].len * diskLen );
 }
+
+// QThread* Hanoier::CreateWorker( std::function<void( u16 level, u16 from, u16 to )> mover )
+// {
+//   return QThread::create(
+//     [mover]( this auto self, u16 level, u16 from, u16 to ) {
+//       if ( level == 0 ) {
+//         mover( level, from, to );
+//         return;
+//       }
+//       self( level - 1, from, TOTAL - from - to );
+//       mover( level, from, to );
+//       self( level - 1, TOTAL - from - to, to );
+//     },
+//     Level - 1,
+//     POLE[0],
+//     POLE[2] );
+// }
 
 hanoi::hanoi( QWidget* parent ) : QMainWindow( parent ), controler {}
 {
@@ -64,7 +83,7 @@ QThread* hanoi::CreateWorker()
       move_and_stop( level, from, to );
       self( level - 1, TOTAL - from - to, to );
     },
-    hanoier.Level,
+    hanoier.Level - 1,
     POLE[0],
     POLE[2] );
 }
@@ -79,7 +98,29 @@ void hanoi::init( u16 level )
   content.reset( level );
 
   hanoier = Hanoier { 1, 0, &content, level };
-  connect( content.step, &QPushButton::clicked, [this] { controler.cv = false; } );
+  connect( content.step, &QPushButton::clicked, [this] {
+    if ( runner )
+      if ( runner->isRunning() )
+        runner->quit();
+    if ( hanoier.finished() ) {
+      hanoier.reset();
+      content.reset( hanoier.Level );
+      worker = CreateWorker();
+      worker->start();
+      return;
+    }
+    controler.cv = false;
+  } );
+  connect( content.start, &QPushButton::clicked, [this] {
+    runner = QThread::create( [this] {
+      while ( !hanoier.finished() ) {
+        controler.cv = false;
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+      }
+      return;
+    } );
+    runner->start();
+  } );
 
   worker = CreateWorker();
   worker->start();

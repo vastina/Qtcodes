@@ -51,6 +51,8 @@ typedef struct Hanoier
   content_* ctnt;
   u16 Level = -1;
 
+  inline bool finished() { return current >= ( 1UL << Level ) - 1; }
+  inline void reset() { current = 0; };
   void moveone( u16 level, u16 from, u16 to );
 } Hanoier;
 
@@ -68,6 +70,7 @@ private:
   };
   controler_ controler;
   QThread* worker { nullptr };
+  QThread* runner { nullptr };
 
 public:
   hanoi( QWidget* parent = nullptr );
