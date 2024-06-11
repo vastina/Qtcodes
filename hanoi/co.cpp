@@ -1,4 +1,4 @@
-#include "mainwindow.hpp"
+#include "co.hpp"
 #include <generator>
 #include <qpushbutton.h>
 
@@ -11,7 +11,7 @@ MainWindow::MainWindow( QWidget* parent ) : QMainWindow( parent )
   this->setPalette( palette );
 
   content.start = new QPushButton( "run", this );
-  //todo, the run btn
+  // todo, the run btn
   content.step = new QPushButton( "next", this );
   content.step->move( 500, 0 );
 
@@ -30,20 +30,21 @@ void MainWindow::init( u16 level )
 {
   hanoier = Hanoier { 1, 0, level, &content };
   connect( content.step, &QPushButton::clicked, [this]() {
-    //so todo, this is what I want when use coroutine
+    // so todo, this is not what I want when use coroutine
     content.reset( hanoier.Level );
-    if ( hanoier.totalstep >=  1UL << hanoier.Level  ) {
+    if ( hanoier.totalstep >= 1UL << hanoier.Level ) {
       hanoier = { 1, 0, hanoier.Level, &content };
       return;
     }
     for ( auto b : hanoier() )
-      if ( b ) break;
+      if ( b )
+        break;
     hanoier.totalstep++;
     hanoier.current = 0;
   } );
 
-  QPalette palette;
-  palette.setColor( QPalette::Window, QPalette::Light );
+  // QPalette palette;
+  // palette.setColor( QPalette::Window, QPalette::Light );
 
   content.disks.resize( level );
   for ( u16 i = 0; i < level; ++i ) {

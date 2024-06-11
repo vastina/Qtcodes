@@ -21,9 +21,18 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_executable(${project_name}
   main.cpp
-  mainwindow.cpp
+  co.cpp
 )
+
+add_executable(thread_${project_name}
+  hanoi.cpp
+  thread_main.cpp
+)
+
 target_link_libraries(${project_name} Qt${QT_VERSION_MAJOR}::Core)
 target_link_libraries(${project_name} Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(thread_${project_name} Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(thread_${project_name} Qt${QT_VERSION_MAJOR}::Widgets)
+
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/)
