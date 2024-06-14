@@ -42,6 +42,7 @@ struct content_
   QPushButton* step { nullptr };
 
   void reset( u16 );
+  void moveone( u16 level, u16 from, u16 to );
 };
 
 typedef struct Hanoier

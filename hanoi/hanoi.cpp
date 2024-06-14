@@ -6,6 +6,8 @@
 
 namespace vas {
 
+using namespace std::chrono_literals;
+
 void content_::reset( u16 level )
 {
   poles[0].len = level;
@@ -15,13 +17,18 @@ void content_::reset( u16 level )
   }
 }
 
+void content_::moveone( u16 level, u16 from, u16 to )
+{
+  --poles[from].len;
+  ++poles[to].len;
+  disks[level]->move( ( wWidth / 4 ) * ( to + 1 ) - disks[level]->width() / 2,
+                      wHeight - poles[to].len * diskLen );
+}
+
 void Hanoier::moveone( u16 level, u16 from, u16 to )
 {
   current++;
-  --ctnt->poles[from].len;
-  ++ctnt->poles[to].len;
-  ctnt->disks[level]->move( ( wWidth / 4 ) * ( to + 1 ) - ctnt->disks[level]->width() / 2,
-                            wHeight - ctnt->poles[to].len * diskLen );
+  ctnt->moveone( level, from, to );
 }
 
 // QThread* Hanoier::CreateWorker( std::function<void( u16 level, u16 from, u16 to )> mover )
@@ -69,7 +76,7 @@ QThread* hanoi::CreateWorker()
 {
   const auto move_and_stop { [this]( u16 level, u16 from, u16 to ) {
     while ( controler.cv )
-      ;
+      std::this_thread::sleep_for( 20ms );
     hanoier.moveone( level, from, to );
     controler.cv = true;
   } };
@@ -112,10 +119,15 @@ void hanoi::init( u16 level )
     controler.cv = false;
   } );
   connect( content.start, &QPushButton::clicked, [this] {
+    // if ( runner )
+    //   if ( runner->isRunning() )
+    //     return;
+    // it's not a bug, it's a feature
+    // click this button multiple times will create multiple threads and speed up the process
     runner = QThread::create( [this] {
       while ( !hanoier.finished() ) {
         controler.cv = false;
-        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        std::this_thread::sleep_for( 100ms );
       }
       return;
     } );
