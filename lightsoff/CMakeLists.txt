@@ -21,6 +21,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_executable(${project_name}
   main.cpp
+  lightsoff.cpp
 )
 target_link_libraries(${project_name} Qt${QT_VERSION_MAJOR}::Core)
 target_link_libraries(${project_name} Qt${QT_VERSION_MAJOR}::Widgets)
