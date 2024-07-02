@@ -1,7 +1,9 @@
 build
 .cache
 log.txt
+compile_commands.json
 test
+**/.vscode
 
 # executables
 **/*.out
