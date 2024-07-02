@@ -82,7 +82,7 @@ void GameWindow::InitBoard( QGridLayout* gridLayout )
 
 void GameWindow::Nextpuzzle()
 {
-  if ( (++puzzleIndex_) >= puzzles_.size() ) {
+  if ( ( ++puzzleIndex_ ) >= puzzles_.size() ) {
     puzzleIndex_ = 0;
   }
   for ( int i = 0; i < 5; ++i ) {
@@ -91,7 +91,7 @@ void GameWindow::Nextpuzzle()
       board_[i][j]->setStyleSheet( color_[i][j] ? redstyle.data() : bluestyle.data() );
     }
   }
-  whichPuzzle_->setText( QString( "Puzzle " ).append(QChar('1' + puzzleIndex_)) );
+  whichPuzzle_->setText( QString( "Puzzle " ).append( QString( std::to_string( puzzleIndex_ + 1 ).data() ) ) );
   timeLabel_->setText( "0" );
 }
 
