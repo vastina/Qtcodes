@@ -1,5 +1,7 @@
 #include "lightsoff.hpp"
 
+#include <random>
+
 namespace vas {
 
 GameWindow::GameWindow( const std::vector<std::array<std::array<bool, 5>, 5>>& puzzles, QWidget* parent )
@@ -80,14 +82,42 @@ void GameWindow::InitBoard( QGridLayout* gridLayout )
   }
 }
 
+std::mt19937 gen { std::random_device {}() };
+std::uniform_int_distribution<int> dist( 0, 4 );
+auto rd { std::bind( dist, gen ) };
+static void GenRandomPuzzle( bool puzzle[5][5] )
+{
+  int step = rd() * 5 + 1;
+  for(int k = 0; k < step; ++k) {
+    int x = rd();
+    int y = rd();
+    puzzle[x][y] = !puzzle[x][y];
+    if ( x > 0 ) {
+      puzzle[x - 1][y] = !puzzle[x - 1][y];
+    }
+    if ( x < 4 ) {
+      puzzle[x + 1][y] = !puzzle[x + 1][y];
+    }
+    if ( y > 0 ) {
+      puzzle[x][y - 1] = !puzzle[x][y - 1];
+    }
+    if ( y < 4 ) {
+      puzzle[x][y + 1] = !puzzle[x][y + 1];
+    }
+  }
+}
+
 void GameWindow::Nextpuzzle()
 {
   if ( ( ++puzzleIndex_ ) >= puzzles_.size() ) {
-    puzzleIndex_ = 0;
+    GenRandomPuzzle( color_ );
+  } else {
+    for ( int i = 0; i < 5; ++i )
+      for ( int j = 0; j < 5; ++j )
+        color_[i][j] = puzzles_[puzzleIndex_][i][j];
   }
   for ( int i = 0; i < 5; ++i ) {
     for ( int j = 0; j < 5; ++j ) {
-      color_[i][j] = puzzles_[puzzleIndex_][i][j];
       board_[i][j]->setStyleSheet( color_[i][j] ? redstyle.data() : bluestyle.data() );
     }
   }
