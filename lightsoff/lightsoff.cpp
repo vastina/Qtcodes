@@ -88,7 +88,7 @@ auto rd { std::bind( dist, gen ) };
 static void GenRandomPuzzle( bool puzzle[5][5] )
 {
   int step = rd() * 5 + 1;
-  for(int k = 0; k < step; ++k) {
+  for ( int k = 0; k < step; ++k ) {
     int x = rd();
     int y = rd();
     puzzle[x][y] = !puzzle[x][y];

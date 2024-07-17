@@ -2,24 +2,28 @@
 
 #include <QApplication>
 #include <fstream>
+#include <filesystem>
 
 auto readPuzzleConfig( const char* filename )
 {
-  std::vector<std::array<std::array<bool, 5>, 5>> puzzles {};
+  std::vector<std::array<std::array<bool, 5>, 5>> puzzles {
+    { 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 } };
 
-  std::ifstream ifs { filename };
-  if ( ifs )
-    while ( !ifs.eof() ) {
-      std::array<std::array<bool, 5>, 5> puzzle {};
-      for ( int i = 0; i < 5; ++i ) {
-        for ( int j = 0; j < 5; ++j ) {
-          ifs >> puzzle[i][j];
-          // should have check here
+  if ( std::filesystem::exists( filename ) ) {
+    std::ifstream ifs { filename };
+    if ( ifs )
+      while ( !ifs.eof() ) {
+        std::array<std::array<bool, 5>, 5> puzzle {};
+        for ( int i = 0; i < 5; ++i ) {
+          for ( int j = 0; j < 5; ++j ) {
+            ifs >> puzzle[i][j];
+            // should have check here
+          }
         }
+        puzzles.push_back( puzzle );
       }
-      puzzles.push_back( puzzle );
-    }
-  ifs.close();
+    ifs.close();
+  }
 
   return puzzles;
 }
