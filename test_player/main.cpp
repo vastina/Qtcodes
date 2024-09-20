@@ -10,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QListView>
+#include <QLabel>
 
 int main( int argc, char** argv )
 {
@@ -33,12 +34,16 @@ int main( int argc, char** argv )
   QHBoxLayout* hLayout = new QHBoxLayout;
   QBoxLayout* controlLayout = new QHBoxLayout;
   auto slider = new QSlider( Qt::Horizontal, &wd );
+  auto labelDuration = new QLabel( &wd );
   auto openButton = new QPushButton( "open", &wd );
   {
     displayLayout->addWidget( vw );
     layout->addLayout( displayLayout );
 
     hLayout->addWidget( slider );
+    labelDuration->setText( "00:00 / 00:00" );
+    labelDuration->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Fixed );
+    hLayout->addWidget( labelDuration );
     layout->addLayout( hLayout );
 
     controlLayout->addWidget( openButton );
@@ -60,11 +65,33 @@ int main( int argc, char** argv )
     player->setSource( filePaths.at( 0 ) );
     player->play();
   } );
-  QObject::connect( player, &QMediaPlayer::durationChanged, [slider]( int64_t duration ) {
-    slider->setRange( 0, duration );
-  } );
+  int64_t currentDuration {};
+  QObject::connect(
+    player, &QMediaPlayer::durationChanged, [slider, &currentDuration]( int64_t duration ) {
+      slider->setRange( 0, duration );
+      slider->setValue( 0 );
+
+      currentDuration = duration;
+    } );
   QObject::connect(
     slider, &QSlider::sliderMoved, &wd, [player]( int msSec ) { player->setPosition( msSec ); } );
+  QObject::connect(
+    player,
+    &QMediaPlayer::positionChanged,
+    &wd,
+    [slider, labelDuration, &currentDuration]( int64_t MS ) {
+      if ( not slider->isSliderDown() )
+        slider->setValue( MS );
+
+      int64_t Sec = MS / 1000;
+      int64_t currentDurationSec = currentDuration / 1000;
+      labelDuration->setText(
+        QTime( ( Sec / 3600 ), ( Sec / 60 ) % 60, Sec % 60 )
+          .toString( currentDurationSec > 3600 ? "hh:mm:ss" : "mm:ss" )
+        + " / "
+        + QTime( ( currentDurationSec / 3600 ), ( currentDurationSec / 60 ) % 60, currentDurationSec % 60 )
+            .toString( currentDurationSec > 3600 ? "hh:mm:ss" : "mm:ss" ) );
+    } );
 
   wd.show();
 
